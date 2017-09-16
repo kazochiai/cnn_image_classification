@@ -1,0 +1,4 @@
+import pickle
+
+# Load the Preprocessed Validation data
+valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
