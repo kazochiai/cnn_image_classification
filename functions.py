@@ -1,5 +1,5 @@
 import unit_tests.problem_unittests as tests
-from sklearn.preprocessing import LabelBinarizer
+import numpy as np
 
 def normalize(x):
     """
@@ -8,12 +8,12 @@ def normalize(x):
     : return: Numpy array of normalize data
     """
     # TODO: Implement Function
-    a = 0.0
-    b = 1.0
-    mi = 0.0
+    #a = 0.0
+    #b = 1.0
+    #mi = 0.0
     ma = 255.0
-    print(a + (((x - mi)*(b - a))/(ma - mi)))
-    return a + (((x - mi)*(b - a))/(ma - mi))
+    #return a + (((x - mi)*(b - a))/(ma - mi))
+    return x/ma
 
 
 """
@@ -22,23 +22,23 @@ Test
 tests.test_normalize(normalize)
 
 
-encoder = LabelBinarizer()
-once = False
+#encoder = LabelBinarizer()
+#once = False
 def one_hot_encode(x):
     """
     One hot encode a list of sample labels. Return a one-hot encoded vector for each label.
     : x: List of sample Labels
     : return: Numpy array of one-hot encoded labels
     """
-    global once
+    #global once
     # TODO: Implement Function
-    if (once == False):
-        encoder.fit(x)
-        once = True
+    #if (once == False):
+        #encoder.fit(x)
+        #once = True
 
-    one_hor_labels = encoder.transform(x)
-
-    return one_hor_labels
+    #one_hor_labels = encoder.transform(x)
+    num_labels = np.max(x) + 1
+    return np.eye(num_labels)[x]
 
 
 """

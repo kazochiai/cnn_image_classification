@@ -8,7 +8,8 @@ def neural_net_image_input(image_shape):
     : image_shape: Shape of the images
     : return: Tensor for image input.
     """
-    return tf.placeholder(tf.float32, shape=[None, image_shape[0], image_shape[1], image_shape[2]], name='x')
+    #return tf.placeholder(tf.float32, shape=[None, image_shape[0], image_shape[1], image_shape[2]], name='x')
+    return tf.placeholder(tf.float32, shape=[None, *image_shape], name='x')
 
 
 def neural_net_label_input(n_classes):
@@ -61,7 +62,7 @@ def conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ks
     conv_init_values = tf.truncated_normal([filter_size_height, filter_size_width, x_depth, conv_num_outputs],
                                            stddev=0.1)
     kernel = tf.Variable(conv_init_values)
-    bias = tf.Variable(tf.zeros(conv_num_outputs))
+    bias = tf.constant(0.1)#tf.Variable(tf.zeros(conv_num_outputs))
 
     # Apply Convolution
     conv_layer = tf.nn.conv2d(x_tensor, kernel, strides=[1, conv_strides[0], conv_strides[1], 1], padding='SAME',
@@ -126,7 +127,7 @@ def fully_conn(x_tensor, num_outputs):
     x_shape_row = x_shape[1]
 
     weight = tf.Variable(tf.truncated_normal([x_shape_row, num_outputs], stddev=0.1))
-    bias = tf.Variable(tf.zeros(num_outputs))
+    bias = tf.constant(0.1)#tf.Variable(tf.zeros(num_outputs))
 
     out = tf.add(tf.matmul(x_tensor, weight), bias)
     activated = tf.nn.relu(out)
@@ -157,7 +158,7 @@ def output(x_tensor, num_outputs):
     x_shape = x_tensor.shape.as_list()
     x_shape_row = x_shape[1]
     weight = tf.Variable(tf.truncated_normal([x_shape_row, num_outputs], stddev=0.1))
-    bias = tf.Variable(tf.zeros(num_outputs))
+    bias = tf.constant(0.1)#tf.Variable(tf.zeros(num_outputs))
 
     out = tf.add(tf.matmul(x_tensor, weight), bias)
     return out
@@ -181,33 +182,40 @@ def conv_net(x, keep_prob):
     #    Play around with different number of outputs, kernel size and stride
     # Function Definition from Above:
     #    conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ksize, pool_strides)
-    conv_num_outputs = 30
+    conv_num_outputs = 64
     conv_ksize = (4, 4)
     conv_strides = (1, 1)
     pool_ksize = (2, 2)
     pool_strides = (2, 2)
     conv1 = conv2d_maxpool(x, conv_num_outputs, conv_ksize, conv_strides, pool_ksize, pool_strides)
 
-    conv_num_outputs2 = 50
+    conv_num_outputs2 = 128
     conv_ksize2 = (2, 2)
     conv_strides2 = (2, 2)
     pool_ksize2 = (4, 4)
     pool_strides2 = (1, 1)
     conv2 = conv2d_maxpool(conv1, conv_num_outputs2, conv_ksize2, conv_strides2, pool_ksize2, pool_strides2)
 
+    conv_num_outputs3 = 256
+    conv_ksize3 = (2, 2)
+    conv_strides3 = (1, 1)
+    pool_ksize3 = (2, 2)
+    pool_strides3 = (1, 1)
+    conv3 = conv2d_maxpool(conv2, conv_num_outputs3, conv_ksize3, conv_strides3, pool_ksize3, pool_strides3)
+
     # TODO: Apply a Flatten Layer
     # Function Definition from Above:
-    flattened_x = flatten(conv2)
+    flattened_x = flatten(conv3)
 
     # TODO: Apply 1, 2, or 3 Fully Connected Layers
     #    Play around with different number of outputs
     # Function Definition from Above:
     #   fully_conn(x_tensor, num_outputs)
-    f_conn = fully_conn(flattened_x, 40)
+    f_conn = fully_conn(flattened_x, 1000)
     f_conn_d = tf.nn.dropout(f_conn, keep_prob)
-    f_conn2 = fully_conn(f_conn_d, 40)
+    f_conn2 = fully_conn(f_conn_d, 600)
     f_conn2_d = tf.nn.dropout(f_conn2, keep_prob)
-    f_conn3 = fully_conn(f_conn2_d, 40)
+    f_conn3 = fully_conn(f_conn2_d, 200)
 
     # TODO: Apply an Output Layer
     #    Set this to the number of classes
