@@ -37,8 +37,8 @@ def one_hot_encode(x):
         #once = True
 
     #one_hor_labels = encoder.transform(x)
-    num_labels = np.max(x) + 1
-    return np.eye(num_labels)[x]
+    #num_labels = np.max(x) + 1
+    return np.eye(10)[x]
 
 
 """
